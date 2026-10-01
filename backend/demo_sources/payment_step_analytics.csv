@@ -1,0 +1,6 @@
+segment,checkout_sessions,payment_step_abandonment_rate,authorization_success_rate,median_payment_seconds,observation
+returning_customer,18420,0.214,0.964,96,"Highest abandonment at payment entry; 31% switch devices between sessions"
+guest_customer,22610,0.173,0.951,88,"Guest flow remains an important acquisition path"
+mobile,30220,0.238,0.946,111,"Small-screen field validation and keyboard friction"
+desktop,10810,0.142,0.972,73,"Lower payment-step abandonment"
+provider_timeout,621,0.0,0.0,0,"Timeouts correlate with duplicate order support contacts"

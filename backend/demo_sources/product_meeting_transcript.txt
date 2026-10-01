@@ -1,0 +1,12 @@
+Checkout Revamp — Product / Engineering weekly sync
+Date: 18 August 2026  |  Recording transcript excerpt
+
+Maya (Product): Returning shoppers are abandoning checkout because they re-enter the same details. We should let them save their payment information so next time they can choose the card and finish faster.
+
+Leo (Engineering): Do you mean save a card with the processor token, or store the card details in our profile service?
+
+Maya (Product): The customer expectation is that we remember the payment method. The UI should include a “Remember this card” choice. Let's confirm the implementation with Compliance, but keep the returning-checkout goal in scope.
+
+Priya (Analytics): Returning customers have the highest payment-step abandonment. Guest checkout must remain available; we should not force account creation.
+
+Decision log: No decision was made on payment credential retention during this meeting. Follow up with Security and Compliance before implementation.
