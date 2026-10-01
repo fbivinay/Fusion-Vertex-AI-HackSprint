@@ -1,0 +1,182 @@
+{
+  "title": "Shape the Fusion workspace",
+  "question": "Choose the structure that should guide the redesign. Every option keeps your neutral palette, restrained glass, readable type, responsive behavior, and performance constraints.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Tabbed evidence folio",
+      "kicker": "THE ROLL",
+      "lineage": "tabbed reference manuals and punched acetate overlays",
+      "thesis": "A clear, tabbed reading surface keeps each project stage and its source trail easy to follow.",
+      "palette": ["#F4F7F5", "#1C2924", "#FBFDFC", "#D6E0DB", "#437B69", "#A95141"],
+      "materials": ["restrained translucent navigation over solid reading surfaces", "hairline tab rail", "Fusion jade for active evidence links"],
+      "viewport": "The project title and next action sit above a visible seven-stage workflow. A pending source conflict leads the page; requirements and sources continue in one shared reading grid.",
+      "risk": "If every surface is translucent, quotations lose contrast and the workspace feels like a physical-book costume.",
+      "raised": [
+        {
+          "from": "challenger-dark-console",
+          "raise": "High-consequence choices stay apart from nearby actions, with a clear focus boundary and rationale before they are recorded."
+        }
+      ],
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "project rail", "x": 0, "y": 0, "w": 2, "h": 10},
+          {"label": "project heading and actions", "x": 2, "y": 0, "w": 10, "h": 1, "accent": true},
+          {"label": "seven-stage workflow", "x": 2, "y": 1, "w": 10, "h": 1},
+          {"label": "pending conflict and source comparison", "x": 2, "y": 2, "w": 7, "h": 4},
+          {"label": "source library", "x": 9, "y": 2, "w": 3, "h": 4},
+          {"label": "requirements ledger", "x": 2, "y": 6, "w": 10, "h": 4}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/assigned.webp"
+    },
+    {
+      "id": "model-pick",
+      "label": "Cited delivery brief",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "consulting decision briefs with a compact citation apparatus",
+      "thesis": "Start with the question a delivery lead must answer, then keep the source trail beside it.",
+      "palette": ["#F4F7F5", "#1C2924", "#FBFDFC", "#D6E0DB", "#437B69", "#A95141"],
+      "materials": ["quiet paper-like reading field", "fine citation rules", "one translucent context rail"],
+      "viewport": "A single open decision occupies the main reading column, with its two source statements and impact. A narrow context rail holds project status and linked requirements; the register follows below.",
+      "risk": "This is the most familiar direction and can become a conventional project dashboard if the evidence trail stops leading.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "project rail", "x": 0, "y": 0, "w": 2, "h": 10},
+          {"label": "project heading", "x": 2, "y": 0, "w": 10, "h": 1, "accent": true},
+          {"label": "open decision brief", "x": 2, "y": 1, "w": 7, "h": 6},
+          {"label": "citation and project context", "x": 9, "y": 1, "w": 3, "h": 6},
+          {"label": "priority requirement register", "x": 2, "y": 7, "w": 10, "h": 3}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/model-pick.webp"
+    },
+    {
+      "id": "challenger-ticket-wallet",
+      "label": "Seven-stage source wallet",
+      "verdict": "competitive",
+      "lineage": "jet-age ticket wallets and their retained journey stubs",
+      "thesis": "The workflow reads as a visible sequence; completed and unresolved stages remain in place.",
+      "palette": ["#F4F7F5", "#1C2924", "#FBFDFC", "#D6E0DB", "#437B69", "#A95141"],
+      "materials": ["folded process sequence translated into tabs", "ruled status cells", "retained marks for completed work"],
+      "viewport": "The seven project stages form a numbered rail. Selecting a stage opens its evidence or review surface, while pending work remains visibly marked in the sequence.",
+      "case": "Competitive: the sequence clarifies where work stands and preserves state; the travel reference identifies less with the delivery lead.",
+      "risk": "The ticket form feels playful if process names and decision states are reduced to decoration.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "project rail", "x": 0, "y": 0, "w": 2, "h": 10},
+          {"label": "project heading", "x": 2, "y": 0, "w": 10, "h": 1},
+          {"label": "retained seven-stage sequence", "x": 2, "y": 1, "w": 10, "h": 2, "accent": true},
+          {"label": "active stage and source trail", "x": 2, "y": 3, "w": 10, "h": 5},
+          {"label": "requirements register", "x": 2, "y": 8, "w": 10, "h": 2}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/challenger-ticket-wallet.webp",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-jet-age-ticket-wallet-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/vernacular-ephemera-jet-age-ticket-wallet.webp"
+    },
+    {
+      "id": "challenger-reference-manual",
+      "label": "Layered reference manual",
+      "verdict": "competitive",
+      "lineage": "boxed-software manuals with transparent acetate leaves and a stepped tab rail",
+      "thesis": "One active section lifts above a transparent layer while supporting text stays on a clear reading surface.",
+      "palette": ["#F4F7F5", "#1C2924", "#FBFDFC", "#D6E0DB", "#437B69", "#A95141"],
+      "materials": ["milk-white translucent navigation", "neutral section board translated to one restrained Fusion accent", "punched reference marks"],
+      "viewport": "A seven-tab rail names Overview, Requirements, Evidence, Conflicts, Decisions, Ask Fusion, and BRD. The selected section opens as a high-contrast page with traceable references.",
+      "case": "Competitive: section tabs fit the product's workflow; the manual's single-size typography and multicolor boards weaken information hierarchy and the neutral brief.",
+      "risk": "Literal manual details can make the interface feel like a book instead of a responsive workspace.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "project rail", "x": 0, "y": 0, "w": 2, "h": 10},
+          {"label": "translucent seven-tab rail", "x": 2, "y": 0, "w": 10, "h": 2, "accent": true},
+          {"label": "active section title and next action", "x": 2, "y": 2, "w": 10, "h": 1},
+          {"label": "opaque reading page with evidence links", "x": 2, "y": 3, "w": 10, "h": 7}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/challenger-reference-manual.webp",
+      "hero": "https://impeccable.style/worlds/cards/rw-manual-acetate-tab-board-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/rw-manual-acetate-tab-board.webp"
+    },
+    {
+      "id": "challenger-grid-specimen",
+      "label": "Evidence grid",
+      "verdict": "competitive",
+      "lineage": "Wim Crouwel's cell-built type specimens and visible construction grids",
+      "thesis": "A stable grid makes requirement IDs, confidence, state, and source references easy to compare.",
+      "palette": ["#F4F7F5", "#1C2924", "#FBFDFC", "#D6E0DB", "#437B69", "#A95141"],
+      "materials": ["visible but quiet construction rules", "tabular numerals", "one active accent plane"],
+      "viewport": "A consistent twelve-column ledger carries the project title, process rail, pending decision, and priority requirements. Columns collapse into labeled records on narrow screens.",
+      "case": "Competitive: the grid improves comparison and alignment; the original typographic specimen does not naturally identify a delivery review.",
+      "risk": "A visible grid can overpower the content if every field is boxed.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "project rail", "x": 0, "y": 0, "w": 2, "h": 10},
+          {"label": "project header on grid", "x": 2, "y": 0, "w": 10, "h": 1, "accent": true},
+          {"label": "aligned process rail", "x": 2, "y": 1, "w": 10, "h": 1},
+          {"label": "decision and evidence comparison", "x": 2, "y": 2, "w": 10, "h": 4},
+          {"label": "aligned requirement ledger", "x": 2, "y": 6, "w": 10, "h": 4}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/challenger-grid-specimen.webp",
+      "hero": "https://impeccable.style/worlds/cards/crouwel-grid-specimen-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/crouwel-grid-specimen.webp"
+    },
+    {
+      "id": "challenger-dark-console",
+      "label": "Dark-first developer console",
+      "verdict": "declined",
+      "lineage": "graphite developer consoles divided by hairline seams",
+      "thesis": "A compact panel system isolates high-consequence actions and gives each state one restrained accent.",
+      "palette": ["#F4F7F5", "#1C2924", "#FBFDFC", "#D6E0DB", "#437B69", "#A95141"],
+      "materials": ["flat reading planes", "hairline seams", "separate decision actions"],
+      "viewport": "The project opens with a fixed left rail and a dense panel layout for status, source comparison, and action controls.",
+      "case": "Declined: the developer-console audience and dark panel field conflict with the consultant's evidence review and the requested restrained glass system.",
+      "kept": "Separate consequential choices from neighboring actions, with visible focus and a clear rationale before saving.",
+      "risk": "Panel density can hide the source trail and make the interface feel technical rather than consultative.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "console navigation", "x": 0, "y": 0, "w": 2, "h": 10},
+          {"label": "compact project panels", "x": 2, "y": 0, "w": 10, "h": 10}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/challenger-dark-console.webp"
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": true},
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "A conventional project workspace keeps navigation, current status, an open decision, and the requirements register in familiar order.",
+    "palette": ["#F4F7F5", "#1C2924", "#FBFDFC", "#D6E0DB", "#437B69", "#A95141"],
+    "materials": ["flat neutral work surfaces", "standard project navigation", "one status accent"],
+    "viewport": "A plain project header and seven-stage process line lead into one pending-decision area and a requirements table, without a decorative card grid.",
+    "risk": "Familiar by design; it offers less character than the other directions.",
+    "wireframe": {
+      "cols": 12,
+      "rows": 10,
+      "regions": [
+        {"label": "standard sidebar", "x": 0, "y": 0, "w": 2, "h": 10},
+        {"label": "project header and controls", "x": 2, "y": 0, "w": 10, "h": 1},
+        {"label": "process status", "x": 2, "y": 1, "w": 10, "h": 1},
+        {"label": "open decision", "x": 2, "y": 2, "w": 10, "h": 4},
+        {"label": "requirements table", "x": 2, "y": 6, "w": 10, "h": 4}
+      ]
+    },
+    "comp": ".impeccable/mocks/decision/canon.webp"
+  },
+  "steer": true
+}

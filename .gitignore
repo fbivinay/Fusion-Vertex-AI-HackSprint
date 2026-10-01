@@ -11,3 +11,15 @@ frontend/.vercel/
 frontend/.env.local
 *.py[cod]
 
+node_modules/
+.env
+.env.*
+!.env.example
+.next/
+.vercel/
+node_modules/
+.env
+.env.*
+!.env.example
+.next/
+.vercel/
