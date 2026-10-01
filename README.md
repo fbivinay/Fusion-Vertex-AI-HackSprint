@@ -31,3 +31,12 @@ Cloud deployment targets the existing project `hacksprint-510314`; it does not c
 
 Billing is active for `hacksprint-510314`. The private Cloud Storage bucket `fusion-vertex-ai-1068593649702`, BigQuery dataset `fusion_vertex`, Cloud Run service identity, scoped IAM access, required APIs, and Secret Manager secret resource `gemini-api-key` are provisioned. The secret resource still needs a version containing the AI Studio key before Cloud Run can be deployed. Add that version in [Secret Manager](https://console.cloud.google.com/security/secret-manager/secret/gemini-api-key/versions?project=hacksprint-510314), then deploy `backend/` to Cloud Run and `frontend/` to Vercel with `NEXT_PUBLIC_API_URL` set to the Cloud Run URL and its Vercel origin added to `CORS_ORIGINS`.
 
+Production deployments:
+
+- Frontend: [fusion-vertex-ai-hacksprint.vercel.app](https://fusion-vertex-ai-hacksprint.vercel.app)
+- API: [fusion-api-aqvjbqmv3a-uc.a.run.app](https://fusion-api-aqvjbqmv3a-uc.a.run.app)
+- The frontend's Vercel build uses `NEXT_PUBLIC_API_URL` and the Next.js framework preset in `frontend/vercel.json`.
+- Cloud Run uses the AI Studio key from Secret Manager, a private bucket, BigQuery, one instance maximum, one request at a time, and a 12-second Gemini request interval.
+
+Production smoke check: the demo uploaded five sources, generated six cited requirements and ten evidence rows, and stored one critical unresolved payment-retention conflict in BigQuery. The UI and API/CORS checks passed. A subsequent Ask Fusion request received a temporary Gemini `503` high-demand response; no retry or BRD request was sent, so Ask Fusion and BRD generation remain unverified in production.
+
