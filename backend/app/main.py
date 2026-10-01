@@ -97,6 +97,42 @@ def list_projects() -> list[dict]:
     return repository.list_projects()
 
 
+@app.get("/api/workspace")
+def get_workspace(project_id: str | None = None) -> dict:
+    projects, workspace = repository.get_workspace(project_id)
+    if project_id and workspace is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if workspace is None:
+        return {
+            "projects": projects,
+            "project": None,
+            "requirements": [],
+            "evidence": [],
+            "conflicts": [],
+            "decisions": [],
+            "pending": [],
+        }
+
+    project = workspace["project"]
+    project["sources"] = [public_source(source) for source in workspace["sources"]]
+    conflicts = workspace["conflicts"]
+    decisions = workspace["decisions"]
+    decided_conflicts = {item["conflict_id"] for item in decisions if item.get("status") == "RECORDED"}
+    pending = [
+        item for item in conflicts
+        if item.get("status") == "NEEDS_HUMAN_DECISION" and item["id"] not in decided_conflicts
+    ]
+    return {
+        "projects": projects,
+        "project": project,
+        "requirements": workspace["requirements"],
+        "evidence": workspace["evidence"],
+        "conflicts": conflicts,
+        "decisions": decisions,
+        "pending": pending,
+    }
+
+
 @app.post("/api/projects")
 def post_project(request: ProjectCreate) -> dict:
     return create_project(request.name, request.description)

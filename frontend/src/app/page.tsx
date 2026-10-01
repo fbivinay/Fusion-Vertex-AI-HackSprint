@@ -20,6 +20,7 @@ type Requirement = { id: string; description: string; type: string; priority: st
 type Conflict = { id: string; title: string; severity: string; source_a_id: string; source_a_statement: string; source_b_id: string; source_b_statement: string; impact: string; why_it_matters: string; requirement_ids?: string[]; status: string; resolution?: string; selected_source_id?: string; resolution_rationale?: string };
 type Decision = { decision_id: string; conflict_id: string; choice: string; selected_source_id?: string; rationale: string; status: string; decided_at: string };
 type Ask = { answer: string; citations: { requirement_id?: string; evidence_id?: string; source_id?: string; explanation?: string }[] };
+type Workspace = { projects: Project[]; project: Project | null; requirements: Requirement[]; evidence: Evidence[]; conflicts: Conflict[]; decisions: Decision[]; pending: Conflict[] };
 type View = "Overview" | "Requirements" | "Evidence" | "Conflicts" | "Decisions" | "Ask Fusion" | "BRD";
 type Choice = "ACCEPT_SOURCE_A" | "ACCEPT_SOURCE_B" | "KEEP_UNRESOLVED";
 
@@ -82,6 +83,7 @@ export default function Home() {
   const [dropActive, setDropActive] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
+  const skipInitialProjectRefresh = useRef("");
   const reduceMotion = useReducedMotion();
 
   const reloadProjects = useCallback(async () => {
@@ -94,19 +96,15 @@ export default function Home() {
     if (!id) return;
     setLoading(true);
     try {
-      const [detail, reqs, evs, cons, decisionResult] = await Promise.all([
-        api<Project>("/api/projects/" + id),
-        api<Requirement[]>("/api/projects/" + id + "/requirements"),
-        api<Evidence[]>("/api/projects/" + id + "/evidence"),
-        api<Conflict[]>("/api/projects/" + id + "/conflicts"),
-        api<{ decisions: Decision[]; pending: Conflict[] }>("/api/projects/" + id + "/decisions"),
-      ]);
-      setProject(detail);
-      setRequirements(reqs);
-      setEvidence(evs);
-      setConflicts(cons);
-      setDecisions(decisionResult.decisions);
-      setPending(decisionResult.pending);
+      const workspace = await api<Workspace>("/api/workspace?project_id=" + encodeURIComponent(id));
+      if (!workspace.project) throw new Error("Project not found");
+      setProjects(workspace.projects);
+      setProject(workspace.project);
+      setRequirements(workspace.requirements);
+      setEvidence(workspace.evidence);
+      setConflicts(workspace.conflicts);
+      setDecisions(workspace.decisions);
+      setPending(workspace.pending);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load project data");
     } finally {
@@ -117,27 +115,36 @@ export default function Home() {
   useEffect(() => {
     const enter = window.setTimeout(() => document.documentElement.setAttribute("data-entered", ""), 1800);
     let active = true;
-    const load = window.setTimeout(() => {
-      void reloadProjects().then((list) => {
-        if (!active) return;
-        if (list[0]) setProjectId(list[0].project_id);
-        else setLoading(false);
-      }).catch((err) => {
-        if (active) {
-          setError(err instanceof Error ? err.message : "The Fusion API is not reachable.");
-          setLoading(false);
-        }
-      });
-    }, 0);
+    void api<Workspace>("/api/workspace").then((workspace) => {
+      if (!active) return;
+      setProjects(workspace.projects);
+      setProject(workspace.project);
+      setRequirements(workspace.requirements);
+      setEvidence(workspace.evidence);
+      setConflicts(workspace.conflicts);
+      setDecisions(workspace.decisions);
+      setPending(workspace.pending);
+      if (workspace.project) {
+        skipInitialProjectRefresh.current = workspace.project.project_id;
+        setProjectId(workspace.project.project_id);
+      }
+    }).catch((err) => {
+      if (active) {
+        setError(err instanceof Error ? err.message : "The Fusion API is not reachable.");
+      }
+    }).finally(() => { if (active) setLoading(false); });
     return () => {
       active = false;
       window.clearTimeout(enter);
-      window.clearTimeout(load);
     };
-  }, [reloadProjects]);
+  }, []);
 
   useEffect(() => {
     if (!projectId) return;
+    if (skipInitialProjectRefresh.current === projectId) {
+      skipInitialProjectRefresh.current = "";
+      return;
+    }
     const timer = window.setTimeout(() => { void refreshProject(projectId); }, 0);
     return () => window.clearTimeout(timer);
   }, [projectId, refreshProject]);
