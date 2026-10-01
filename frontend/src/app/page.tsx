@@ -34,12 +34,27 @@ const navItems: { name: View; icon: LucideIcon }[] = [
 ];
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(API + path, init);
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new Error(body.detail || "Request failed (" + response.status + ")");
+  const canRetry = (init?.method || "GET").toUpperCase() === "GET";
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    let response: Response;
+    try {
+      response = await fetch(API + path, init);
+    } catch (error) {
+      if (!canRetry || attempt === 2) throw error;
+      await new Promise((resolve) => window.setTimeout(resolve, 350 * (attempt + 1)));
+      continue;
+    }
+    if (!response.ok) {
+      if (canRetry && response.status >= 500 && attempt < 2) {
+        await new Promise((resolve) => window.setTimeout(resolve, 350 * (attempt + 1)));
+        continue;
+      }
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body.detail || "Request failed (" + response.status + ")");
+    }
+    return response.json() as Promise<T>;
   }
-  return response.json() as Promise<T>;
+  throw new Error("Could not reach the Fusion service.");
 }
 
 export default function Home() {
@@ -405,11 +420,13 @@ export default function Home() {
       </header>
 
       <div className="content-shell" ref={pageRef} aria-busy={loading}>
-        {error && <div className="notice notice-error" role="alert"><span className="notice-mark"><X size={16} /></span><div><strong>Action needed</strong><p>{error}</p></div><button className="notice-close" onClick={() => setError("")} aria-label="Dismiss error"><X size={17} /></button></div>}
+        {error && project && <div className="notice notice-error" role="alert"><span className="notice-mark"><X size={16} /></span><div><strong>Action needed</strong><p>{error}</p></div><button className="notice-close" onClick={() => setError("")} aria-label="Dismiss error"><X size={17} /></button></div>}
         {notice && <div className="notice notice-success" role="status"><span className="notice-mark"><Check size={16} /></span><p>{notice}</p><button className="notice-close" onClick={() => setNotice("")} aria-label="Dismiss message"><X size={17} /></button></div>}
         {busy && <div className="busy-strip" role="status" aria-live="polite"><LoaderCircle className="busy-spinner" size={17} />{busy}<span className="busy-track"><i /></span></div>}
 
-        {loading && !project ? <LoadingWorkspace /> : !project ? (
+        {loading && !project ? <LoadingWorkspace /> : !project && error ? (
+          <WorkspaceUnavailable message={error} onRetry={() => window.location.reload()} />
+        ) : !project ? (
           <WelcomeState onCreate={() => setProjectDialog(true)} onDemo={() => void launchDemo()} />
         ) : (
           <LazyMotion features={domAnimation}>
@@ -452,8 +469,6 @@ export default function Home() {
           </LazyMotion>
         )}
       </div>
-
-      {project && <RiskTicker project={project} pending={pending} requirements={requirements} onConflict={() => chooseView("Conflicts")} onRequirements={() => chooseView("Requirements")} />}
 
       <Dialog.Root open={projectDialog} onOpenChange={setProjectDialog}>
         <Dialog.Portal>
@@ -503,6 +518,19 @@ function LoadingWorkspace() {
     <section className="figures-panel figures-loading"><div className="figures-grid">{Array.from({ length: 6 }, (_, i) => <div className="stat-card loading-card" key={i}><span className="loading-line" /><span className="loading-line" /><span className="loading-line" /></div>)}</div></section>
     <div className="loading-steps"><span /><span /><span /><span /><span /></div>
   </div>;
+}
+
+function WorkspaceUnavailable({ message, onRetry }: { message: string; onRetry: () => void }) {
+  const detail = message === "Failed to fetch"
+    ? "The project service did not respond after a few attempts. Your project data is unchanged."
+    : message;
+  return <section className="workspace-unavailable" role="alert">
+    <span className="workspace-unavailable-mark"><CloudUpload size={19} /></span>
+    <span className="overline">WORKSPACE CONNECTION</span>
+    <h1>We couldn’t load your workspace.</h1>
+    <p>{detail}</p>
+    <button className="button button-dark" onClick={onRetry}>Try again <ArrowRight size={16} /></button>
+  </section>;
 }
 
 function WelcomeState({ onCreate, onDemo }: { onCreate: () => void; onDemo: () => void }) {
@@ -728,19 +756,6 @@ function FileBadge({ filename }: { filename: string }) {
 
 function StatusBadge({ children, tone = "neutral" }: { children: ReactNode; tone?: string }) {
   return <span className={"status-badge badge-" + tone}>{children}</span>;
-}
-
-function RiskTicker({ project, pending, requirements, onConflict, onRequirements }: { project: Project; pending: Conflict[]; requirements: Requirement[]; onConflict: () => void; onRequirements: () => void }) {
-  const tickerItems = pending.length
-    ? pending.slice(0, 8).map((item) => ({ id: item.id, label: item.title, meta: item.requirement_ids?.join(", ") || project.name, score: "!" }))
-    : requirements.slice(0, 8).map((item) => ({ id: item.id, label: item.description, meta: item.priority + " · " + item.classification.replaceAll("_", " "), score: item.priority }))
-      .concat(!requirements.length ? [{ id: "workspace-ready", label: "The source set is ready when you are.", meta: project.name, score: "→" }] : []);
-  const activate = pending.length ? onConflict : onRequirements;
-  return <div className="ticker" aria-label={pending.length ? "Open project conflicts" : "Project requirements"}><div className="ticker-viewport"><div className="ticker-track"><TickerSet items={tickerItems} onActivate={activate} /><TickerSet items={tickerItems} onActivate={activate} hidden /></div></div></div>;
-}
-
-function TickerSet({ items, onActivate, hidden = false }: { items: { id: string; label: string; meta: string; score: string }[]; onActivate: () => void; hidden?: boolean }) {
-  return <div className="ticker-set" aria-hidden={hidden || undefined}>{items.map((item) => <button key={item.id} className="ticker-item" onClick={onActivate} tabIndex={hidden ? -1 : undefined}><span className={"ticker-score" + (item.score === "!" ? " ticker-score-alert" : "")}>{item.score}</span><span className="ticker-name">{item.label}</span><span className="ticker-meta">{item.meta}</span></button>)}</div>;
 }
 
 function HeroField() {
