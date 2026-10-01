@@ -12,6 +12,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 const API = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080").replace(/\/$/, "");
+const ACTIVE_PROJECT_STORAGE_KEY = "fusion-active-project";
 
 type Project = { project_id: string; name: string; description?: string; analysis_status?: string; brd_status?: string; analysis_summary?: string; source_count?: number; sources?: Source[]; open_questions?: unknown[]; [key: string]: unknown };
 type Source = { source_id: string; filename: string; mime_type: string; byte_size: number; uploaded_at: string; analyzed?: boolean };
@@ -23,6 +24,18 @@ type Ask = { answer: string; citations: { requirement_id?: string; evidence_id?:
 type Workspace = { projects: Project[]; project: Project | null; requirements: Requirement[]; evidence: Evidence[]; conflicts: Conflict[]; decisions: Decision[]; pending: Conflict[] };
 type View = "Overview" | "Requirements" | "Evidence" | "Conflicts" | "Decisions" | "Ask Fusion" | "BRD";
 type Choice = "ACCEPT_SOURCE_A" | "ACCEPT_SOURCE_B" | "KEEP_UNRESOLVED";
+
+function storedProjectId() {
+  try { return window.localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY) || ""; }
+  catch { return ""; }
+}
+
+function rememberProject(id: string) {
+  try {
+    if (id) window.localStorage.setItem(ACTIVE_PROJECT_STORAGE_KEY, id);
+    else window.localStorage.removeItem(ACTIVE_PROJECT_STORAGE_KEY);
+  } catch { /* Storage may be unavailable in restricted browser contexts. */ }
+}
 
 const navItems: { name: View; icon: LucideIcon }[] = [
   { name: "Overview", icon: Activity },
@@ -84,6 +97,7 @@ export default function Home() {
   const fileInput = useRef<HTMLInputElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
   const skipInitialProjectRefresh = useRef("");
+  const initialWorkspaceResolved = useRef(false);
   const reduceMotion = useReducedMotion();
 
   const reloadProjects = useCallback(async () => {
@@ -115,8 +129,19 @@ export default function Home() {
   useEffect(() => {
     const enter = window.setTimeout(() => document.documentElement.setAttribute("data-entered", ""), 1800);
     let active = true;
-    void api<Workspace>("/api/workspace").then((workspace) => {
+    const preferredProjectId = storedProjectId();
+    const initialPath = preferredProjectId
+      ? "/api/workspace?project_id=" + encodeURIComponent(preferredProjectId)
+      : "/api/workspace";
+    void api<Workspace>(initialPath).catch((err) => {
+      if (preferredProjectId && err instanceof Error && err.message === "Project not found") {
+        rememberProject("");
+        return api<Workspace>("/api/workspace");
+      }
+      throw err;
+    }).then((workspace) => {
       if (!active) return;
+      initialWorkspaceResolved.current = true;
       setProjects(workspace.projects);
       setProject(workspace.project);
       setRequirements(workspace.requirements);
@@ -127,6 +152,8 @@ export default function Home() {
       if (workspace.project) {
         skipInitialProjectRefresh.current = workspace.project.project_id;
         setProjectId(workspace.project.project_id);
+      } else {
+        rememberProject("");
       }
     }).catch((err) => {
       if (active) {
@@ -148,6 +175,11 @@ export default function Home() {
     const timer = window.setTimeout(() => { void refreshProject(projectId); }, 0);
     return () => window.clearTimeout(timer);
   }, [projectId, refreshProject]);
+
+  useEffect(() => {
+    if (!initialWorkspaceResolved.current) return;
+    rememberProject(projectId);
+  }, [projectId]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !pageRef.current) return;
